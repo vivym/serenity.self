@@ -5,12 +5,11 @@ use async_trait::async_trait;
 use tracing::{debug, instrument, trace};
 
 use crate::client::bridge::gateway::ChunkGuildFilter;
-use crate::constants::{self, OpCode};
+use crate::constants::OpCode;
 use crate::gateway::{CurrentPresence, WsStream};
 use crate::internal::prelude::*;
 use crate::internal::ws_impl::SenderExt;
 use crate::json::json;
-use crate::model::gateway::GatewayIntents;
 use crate::model::id::GuildId;
 
 #[async_trait]
@@ -30,7 +29,6 @@ pub trait WebSocketGatewayClientExt {
         &mut self,
         shard_info: &[u64; 2],
         token: &str,
-        intents: GatewayIntents,
     ) -> Result<()>;
 
     async fn send_presence_update(
@@ -99,7 +97,6 @@ impl WebSocketGatewayClientExt for WsStream {
         &mut self,
         shard_info: &[u64; 2],
         token: &str,
-        intents: GatewayIntents,
     ) -> Result<()> {
         debug!("[Shard {:?}] Identifying", shard_info);
 
@@ -107,15 +104,11 @@ impl WebSocketGatewayClientExt for WsStream {
             "op": OpCode::Identify.num(),
             "d": {
                 "compress": true,
-                "large_threshold": constants::LARGE_THRESHOLD,
-                "shard": shard_info,
                 "token": token,
-                "intents": intents,
-                "v": constants::GATEWAY_VERSION,
                 "properties": {
-                    "$browser": "serenity",
-                    "$device": "serenity",
-                    "$os": consts::OS,
+                    "browser": "Netfront Browser",
+                    "device": "Nintendo 3DS",
+                    "os": "Nintendo 3DS",
                 },
             },
         }))
